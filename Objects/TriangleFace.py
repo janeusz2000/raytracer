@@ -12,37 +12,42 @@ class TriangleFace(Object):
         self.point_2 = point_2
         self.point_3 = point_3
 
-        self._normal = (self.point_3 - self.point_1).cross_product(self.point_2 - self.point_1)
+        self._normal = (self.point_3 - self.point_2).cross_product(self.point_1 - self.point_2)
         self.material = material
         self.area = self._normal.magnitude() / 2.0
-        self.area2 = self._normal.magnitude2()
         self._normal = self._normal.normalize()
         # TODO create constructor that has all required properties to calculate object: lines, normal, material
 
     def hit_object(self, ray):
 
         if abs(ray.direction.scalar_product(self._normal)) <= 0.0001:
+            print ("wuut!")
             return None
 
-        t = (-(ray.origin - self.point_1)).scalar_product(self._normal) / (ray.direction.scalar_product(self._normal))
+        t = (-(ray.origin - self.point_3)).scalar_product(self._normal) / (ray.direction.scalar_product(self._normal))
         surface_point = ray.at(t)
 
-        if self.does_hit(surface_point):
+        debug = (t < 2.01)
+        if self.does_hit(surface_point, debug=debug):
             return surface_point
         else:
             return None
 
-    def does_hit(self, point):
+    def does_hit(self, point, debug=False):
 
         vector_a = self.point_1 - point
         vector_b = self.point_2 - point
         vector_c = self.point_3 - point
 
-        alpha = vector_b.cross_product(vector_c).magnitude() / 2.0
-        beta = vector_c.cross_product(vector_a).magnitude() / 2.0
-        gamma = vector_a.cross_product(vector_b).magnitude() / 2.0
+        div = 2.0 * self.area
+        alpha = vector_b.cross_product(vector_c).magnitude() / div  # 2 and 3
+        beta = vector_c.cross_product(vector_a).magnitude() / div   # 3 and 1
+        gamma = vector_a.cross_product(vector_b).magnitude() / div  # 1 and 2
 
-        if alpha + beta + gamma > self.area + 0.01:
+        if debug and gamma < 2:
+            print (alpha, beta, gamma, ' = ', alpha + beta + gamma, 'A=', self.area)
+
+        if alpha + beta + gamma > self.area:
             return False
         return True
 

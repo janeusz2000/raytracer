@@ -1,6 +1,7 @@
 import pygame
 import sys
 import math
+import contextlib
 
 class GUI:
 
@@ -27,7 +28,13 @@ class GUI:
     def event_check(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit(0)
+                pygame.quit()
+
+    @contextlib.contextmanager
+    def locked(self):
+        self.screen.lock()
+        yield 
+        self.screen.unlock()
 
     def draw_pixel(self, x, y, color):
         self.screen.set_at((x, y), self.get_color_py(color))

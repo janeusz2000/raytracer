@@ -14,11 +14,11 @@ import logging
 
 
 def main():
-    height = 400
+    height = 200
     aspect_ratio = 16.0 / 9
     width = round(height * aspect_ratio)
 
-    samples_per_pixel = 2
+    samples_per_pixel = 1
     max_depth = 1
 
     print("rendering image with width: {}, height: {}, pixels: {}, aspect_ratio: {}, total number of rays: {}".format(
@@ -27,7 +27,7 @@ def main():
 
     color_que = queue.SimpleQueue()
 
-    tile_size = 50
+    tile_size = 5
     image_grid = ImageGrid(width, height, tile_size=tile_size)
     cords_queue = image_grid.get_cord_queue()
 
@@ -51,29 +51,39 @@ def main():
     # TODO Make n -1 threads tha calculates ray-tracing, where  n is number of thread available on CPU
     # TODO Viewer object should be outside the class
     def core_loop():
-        logging.info("Core thread started")
-        time.sleep(0.001)
-        while not cords_queue.empty():
-            (x0, x1, y0, y1) = cords_queue.get()
-            viewer.render(x0, x1, y0, y1)
-
-    def gui_loop():
-        logging.info("GUI thread started")
-        gui = GUI.GUI(height=height, width=width, color_que=color_que)
-        pixel_iteration = 1
+        t = threading.current_thread()
+        logging.info("Core thread %s started", t.getName())
         while True:
             try:
-                [x, y, current_color] = color_que.get(block=False)
-                gui.draw_pixel(x, y, current_color)
+                (x0, x1, y0, y1) = cords_queue.get(block=False)
+                viewer.render(x0, x1, y0, y1)
             except queue.Empty:
-                pass
-            pixel_iteration += 1
-            gui.event_check()
-            if pixel_iteration % 30 == 0:
-                gui.refresh()
-                pixel_iteration = 1
+                break
 
-    threading.Thread(target=gui_loop).start()
+        logging.info("Core thread %s finished", t.getName())
+
+    gui = GUI.GUI(height=height, width=width, color_que=color_que)
+    gui.refresh()    
+    gui.event_check()
+
+
+    def gui_loop(gui):
+        logging.info("GUI thread started")
+        pixel_iteration = 1
+        while True:
+            with gui.locked():
+                try:
+                    while True:
+                        [x, y, current_color] = color_que.get(block=False)
+                        gui.draw_pixel(x, y, current_color)
+                except queue.Empty:
+                    pass
+
+            gui.event_check()
+            gui.refresh()
+
+
+    threading.Thread(target=gui_loop, args=[gui]).start()
 
     thread_list = []
     for a in range(1):
@@ -81,6 +91,9 @@ def main():
 
     for thread in thread_list:
         thread.start()
+
+    for thread in thread_list:
+        thread.join()
 
 
 if __name__ == "__main__":
