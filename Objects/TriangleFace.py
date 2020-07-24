@@ -39,7 +39,7 @@ class TriangleFace(Object):
         vector_b = self.point_2 - point
         vector_c = self.point_3 - point
 
-        div = 2.0 * self.area
+        div = 2.0
         alpha = vector_b.cross_product(vector_c).magnitude() / div  # 2 and 3
         beta = vector_c.cross_product(vector_a).magnitude() / div   # 3 and 1
         gamma = vector_a.cross_product(vector_b).magnitude() / div  # 1 and 2
