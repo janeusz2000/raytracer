@@ -38,7 +38,7 @@ def main():
     viewer = Viewer(height, width, object_list=[], samples_per_pixel=samples_per_pixel,
                     camera=camera, color_que=color_que, max_depth=max_depth)
 
-    triangle = TriangleFace(Color(1, 0, 0), Vector(1, 2, 1), Vector(2, 1, 1), Vector(1, 1, 1))
+    triangle = TriangleFace(Color(1, 0, 0), Vector(0, 0, 1), Vector(0, 1, 1), Vector(1, 0, 1))
     viewer.add_object(triangle)
 
     # sphere1 = Sphere(origin=Vector(0, 1, 3), radius=1)

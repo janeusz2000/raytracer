@@ -44,12 +44,10 @@ class TriangleFace(Object):
         beta = vector_c.cross_product(vector_a).magnitude() / div   # 3 and 1
         gamma = vector_a.cross_product(vector_b).magnitude() / div  # 1 and 2
 
-        if debug and gamma < 2:
-            print (alpha, beta, gamma, ' = ', alpha + beta + gamma, 'A=', self.area)
-
         if alpha + beta + gamma > self.area:
             return False
         return True
+
 
     def normal(self, point):
         return self._normal
