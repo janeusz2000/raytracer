@@ -38,22 +38,13 @@ class Sphere(Object):
             else:
                 return ray.at(min(t1, t2))
 
-    def get_material(self):
-        return self.material
-
     def normal(self, surface_point):
         """Return normal of the surface where object was hit"""
 
         assert isinstance(surface_point, Vector)
         return (surface_point - self.origin).normalize()
 
-    def random_in_unit(self):
 
-        # TODO Delete this function when Vector random is done
 
-        while True:
-            random_vec3 = self.origin.random()
-            if random_vec3.magnitude() >= 0.001:
-                return random_vec3.normalize()
 
 

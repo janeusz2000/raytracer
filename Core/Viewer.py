@@ -4,6 +4,7 @@ from Core import Color
 from Core.RayDataContainer import RayDataContainer
 from Core.Vector import Vector
 
+
 class Viewer:
 
     def __init__(self, height, width, object_list, samples_per_pixel, camera, color_que, max_depth=50):
@@ -17,9 +18,10 @@ class Viewer:
         self.color_que = color_que
         self.max_depth = max_depth
 
-    def render(self):
-        for x in range(self.WIDTH):
-            for y in range(self.HEIGHT):
+    def render(self, x0, x1, y0, y1):
+
+        for x in range(x0, x1):
+            for y in range(y0, y1):
                 current_color = Color.Color(0.0, 0.0, 0.0)
                 for sample in range(0, self.samples_per_pixel):
                     v = (float(y) + (random.random() / 2 - 1)) / float(self.HEIGHT - 1)
@@ -55,10 +57,11 @@ class Viewer:
             return (1.0 - t) * Color.Color(1.0, 1.0, 1.0) + t * Color.Color(0.5, 0.7, 1.0)
 
         else:
+            return Color.Color(0, 0, 0)
             (vector, obj_index) = ray_data.get_closest_data()
             obj = self.object_list[obj_index]
             surface_point = vector + ray.origin
-            target = (obj.normal(surface_point) + obj.random_in_unit()).normalize()
+            target = (obj.normal(surface_point) + Vector.random()).normalize()
             return 0.5 * self.ray_color(Ray(surface_point, target), depth-1)
 
     @staticmethod

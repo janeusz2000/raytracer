@@ -13,7 +13,7 @@ class RayDataContainer:
 
     def get_closest_data(self):
         index = self.length_list.index(min(self.length_list))
-        return (self.point_list[index], self.index_list[index])
+        return self.point_list[index], self.index_list[index]
 
     def __bool__(self):
         return bool(self.length_list)

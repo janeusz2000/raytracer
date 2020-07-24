@@ -7,12 +7,7 @@ class Object(abc.ABC):
     def hit_object(self, ray):
         pass
 
-    def get_material(self):
-        pass
-
     def normal(self, surface_point):
         pass
 
-    def random_in_unit(self):
-        pass
 
