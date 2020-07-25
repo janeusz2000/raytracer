@@ -1,7 +1,6 @@
 from Core.Ray import Ray
 import random
 from Core import Color
-from Core.RayDataContainer import RayDataContainer
 from Core.Vector import Vector
 
 
@@ -42,27 +41,23 @@ class Viewer:
         if depth <= 0:
             return Color.Color(0.0, 0.0, 0.0)
 
-        ray_data = RayDataContainer()
         current_index = 0
 
+        closest_hit_data = None
         for obj in self.object_list:
-            surface_point = obj.hit_object(ray)
-            if surface_point is not None:
-                ray_data.add_data(surface_point - ray.origin, current_index)
+            hit_data = obj.hit_object(ray)
+            if (hit_data is not None) and (closest_hit_data is None or closest_hit_data.t > hit_data.t):
+                closest_hit_data = hit_data
             current_index += 1
 
-        if not ray_data:  # check if ray_data has any data
+        if closest_hit_data is None:
             unit_direction = ray.direction.normalize()
             t = 0.5 * unit_direction.y + 1.0
             return (1.0 - t) * Color.Color(1.0, 1.0, 1.0) + t * Color.Color(0.5, 0.7, 1.0)
 
         else:
-            return Color.Color(0, 0, 0)
-            (vector, obj_index) = ray_data.get_closest_data()
-            obj = self.object_list[obj_index]
-            surface_point = vector + ray.origin
-            target = (obj.normal(surface_point) + Vector.random()).normalize()
-            return 0.5 * self.ray_color(Ray(surface_point, target), depth-1)
+            target = (closest_hit_data.normal + Vector.random()).normalize()
+            return 0.5 * self.ray_color(Ray(closest_hit_data.point, target), depth-1)
 
     @staticmethod
     def is_ray_inside(ray, normal):

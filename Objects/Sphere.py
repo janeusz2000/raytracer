@@ -1,6 +1,7 @@
 from Objects.Object import Object
 from Core.Vector import Vector
 from Core.Color import Color
+from Core.RayHitData import RayHitData
 import math
 
 
@@ -31,20 +32,17 @@ class Sphere(Object):
             temp = math.sqrt(discriminant)
             t1 = (-b - temp) / (2.0 * a)
             t2 = (-b + temp) / (2.0 * a)
-            if t1 < 0 and t2 < 0:
-                return None
-            elif t1 < 0:
-                return None
-            else:
-                return ray.at(min(t1, t2))
+        if t1 < 0 and t2 < 0:
+            return None
+        elif t1 < 0:
+            return None
+        else:
+            t = min(t1, t2)
+            surface_point = ray.at(t)
+            return RayHitData(t, surface_point, self.normal(surface_point))
 
     def normal(self, surface_point):
         """Return normal of the surface where object was hit"""
-
         assert isinstance(surface_point, Vector)
         return (surface_point - self.origin).normalize()
-
-
-
-
 

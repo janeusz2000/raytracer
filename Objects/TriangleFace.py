@@ -1,6 +1,7 @@
 from Objects.Object import Object
 from Core.Vector import Vector
 from Core.Color import Color
+from Core.RayHitData import RayHitData
 
 
 class TriangleFace(Object):
@@ -21,18 +22,16 @@ class TriangleFace(Object):
     def hit_object(self, ray):
 
         if abs(ray.direction.scalar_product(self._normal)) <= 0.0001:
-            print ("wuut!")
             return None
 
         t = (-(ray.origin - self.point_3)).scalar_product(self._normal) / (ray.direction.scalar_product(self._normal))
         if t < 0.01:
             return None
-        surface_point = ray.at(t)
-
 
         debug = (t < 2.01)
-        if self.does_hit(surface_point, debug=debug):
-            return surface_point
+        ray_hit_data = RayHitData(t, ray.at(t), self._normal)
+        if self.does_hit(ray_hit_data.point, debug=debug):
+            return ray_hit_data
         else:
             return None
 
