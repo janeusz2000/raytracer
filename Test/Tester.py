@@ -6,7 +6,7 @@ from Core.Color import Color
 from Objects.TriangleFace import TriangleFace
 import random
 import math
-
+from Core.Ray import Ray
 
 class TestMethods(unittest.TestCase):
 
@@ -26,7 +26,8 @@ class TestMethods(unittest.TestCase):
         hits = 0
         missed = 0
         for a in range(100000):
-            random_point = Vector(random.uniform(0, 3), random.uniform(0, 3), 1)
+            ray = Ray(Vector(0, 0, 0), Vector(0, 0, 1))
+
             if triangle.does_hit(random_point):
                 hits += 1
             else:

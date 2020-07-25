@@ -25,7 +25,10 @@ class TriangleFace(Object):
             return None
 
         t = (-(ray.origin - self.point_3)).scalar_product(self._normal) / (ray.direction.scalar_product(self._normal))
+        if t < 0.01:
+            return None
         surface_point = ray.at(t)
+
 
         debug = (t < 2.01)
         if self.does_hit(surface_point, debug=debug):

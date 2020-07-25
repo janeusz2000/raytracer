@@ -1,5 +1,4 @@
-import queue
-
+import multiprocessing
 
 class ImageGrid:
 
@@ -10,7 +9,7 @@ class ImageGrid:
         self.tile_size = tile_size
 
     def get_cord_queue(self):
-        output_queue = queue.SimpleQueue()
+        output_queue = multiprocessing.SimpleQueue()
         for y_index in range(int(self.height/self.tile_size)):
             for x_index in range(int(self.width/self.tile_size)):
 
