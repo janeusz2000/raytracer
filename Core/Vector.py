@@ -13,19 +13,15 @@ class Vector:
         return "Vector({}, {}, {})".format(self.x, self.y, self.z)
 
     def __add__(self, other):
-        assert isinstance(other, Vector)
         return self.__class__(self.x + other.x, self.y + other.y, self.z + other.z)
 
     def __sub__(self, other):
-        #         assert isinstance(other, Vector)
         return self.__class__(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def __truediv__(self, number):
-        assert not isinstance(number, Vector)
         return self.__class__(self.x / number, self.y / number, self.z / number)
 
     def __mul__(self, number):
-        assert not isinstance(number, Vector)
         return self.__class__(self.x * number, self.y * number, self.z * number)
 
     def __rmul__(self, number):
@@ -41,7 +37,6 @@ class Vector:
         return self.x * other.x + self.y * other.y + self.z * other.z
 
     def cross_product(self, other):
-        assert isinstance(other, Vector)
         return self.__class__(self.y * other.z - self.z * other.y,
                               self.z * other.x - self.x * other.z, self.x * other.y - self.y * other.x)
 
@@ -53,8 +48,6 @@ class Vector:
 
     def normalize(self):
         return self / self.magnitude()
-
-
 
     @staticmethod
     def random():

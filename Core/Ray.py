@@ -9,3 +9,12 @@ class Ray:
 
     # TODO energy value
     # TODO phase Value
+
+
+class RayHitData:
+
+    def __init__(self, t, point, normal, material):
+        self.t = t
+        self.point = point
+        self.normal = normal
+        self.material = material

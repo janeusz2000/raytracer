@@ -2,23 +2,27 @@ from Core.Viewer import Viewer
 from Core.Vector import Vector
 from Core.Camera import Camera
 from Core.ImageGrid import ImageGrid
-from Objects.Sphere import Sphere
-from Objects.TriangleFace import TriangleFace
+from Core.Objects import Sphere
+from Core.Objects import TriangleFace
+from Core.Objects import Surface
 from Graphics import GUI
 from Core.Color import Color
 
+from Core import Materials
 import queue
 import threading
 import logging
+import cProfile
+import pstats
 
 
 def main():
-    height = 200
-    aspect_ratio = 21 / 9
+    height = 400
+    aspect_ratio = 16.0 / 9
     width = round(height * aspect_ratio)
 
-    samples_per_pixel = 1
-    max_depth = 2
+    samples_per_pixel = 2
+    max_depth = 10
 
     print("rendering image with width: {}, height: {}, pixels: {}, aspect_ratio: {}, total number of rays: {}".format(
         width, height, width * height,
@@ -26,7 +30,7 @@ def main():
 
     color_que = queue.SimpleQueue()
 
-    tile_size = 20
+    tile_size = 50
     image_grid = ImageGrid(width, height, tile_size=tile_size)
     cords_queue = image_grid.get_cord_queue()
 
@@ -39,14 +43,26 @@ def main():
     viewer = Viewer(height, width, object_list=[], samples_per_pixel=samples_per_pixel,
                     camera=camera, color_que=color_que, max_depth=max_depth)
 
-    triangle = TriangleFace(Color(1, 0, 0), Vector(0, 0, 1), Vector(0, 1, 1), Vector(1, 0, 1))
+    green_diffuse_material = Materials.MaterialDiffuse(Color(0, 1, 0))
+    triangle = TriangleFace(green_diffuse_material, Vector(0, 0, 4), Vector(0, 4, 4), Vector(3, 0, 2))
     viewer.add_object(triangle)
 
-    sphere1 = Sphere(origin=Vector(0, 1, 3), radius=1)
+    red_diffuse_material = Materials.MaterialMetal(color=Color(1, 0, 0), fuzz=0.01)
+    sphere1 = Sphere(origin=Vector(0, 1, 3), radius=1, material=red_diffuse_material)
     viewer.add_object(sphere1)
 
-    sphere2 = Sphere(origin=Vector(0, -3, 3), radius=3)
+    blue_diffuse_material = Materials.MaterialMetal(color=Color(0, 0, 1), fuzz=0.1)
+    sphere2 = Sphere(origin=Vector(0, -3, 3), radius=3, material= blue_diffuse_material)
     viewer.add_object(sphere2)
+
+    glass_material = Materials.MaterialGlass(color=Color(1, 1, 1), coefficient_refract=1)
+    sphere2 = Sphere(origin=Vector(0, 1, 2), radius=0.4, material=glass_material)
+    viewer.add_object(sphere2)
+
+    yellow_diffuse_material = Materials.MaterialMetal(color=Color(1, 0, 1), fuzz=0.1)
+    surface = Surface(material=yellow_diffuse_material, point_1=Vector(
+        0, 1, 0), point_2=Vector(0, 1, 3), point_3=Vector(2, 1, 3))
+    viewer.add_object(surface)
 
     def core_loop():
         t = threading.current_thread()
@@ -61,10 +77,11 @@ def main():
         logging.info("Core thread %s finished", t.getName())
 
     gui = GUI.GUI(height=height, width=width, color_que=color_que)
-    gui.refresh()    
+    gui.refresh()
     gui.event_check()
 
     def gui_loop(gui):
+
         logging.info("GUI thread started")
         pixel_iteration = 1
         while True:
@@ -80,7 +97,7 @@ def main():
             gui.refresh()
 
     thread_list = []
-    for a in range(2):
+    for a in range(6):
         thread_list.append(threading.Thread(target=core_loop))
 
     for thread in thread_list:
@@ -94,3 +111,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

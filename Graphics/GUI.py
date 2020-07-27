@@ -10,10 +10,8 @@ class GUI:
         self.HEIGHT = height
         self.WIDTH = width
         self.color_que = color_que
-        pygame.init()
-        self.display_surface = pygame.display.set_mode((width, height))
-        pygame.display.set_caption('Ray Tracer')
-        self.screen = pygame.Surface((width, height))
+        self.display_surface = None
+        self.screen = None
 
     def quit(self):
         pygame.quit()
@@ -22,13 +20,19 @@ class GUI:
         self.draw_pixel(x, y, color)
 
     def refresh(self):
+        if self.display_surface is None:
+            pygame.init()
+            self.display_surface = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+            pygame.display.set_caption('Ray Tracer')
+            self.screen = pygame.Surface((self.WIDTH, self.HEIGHT))
+
         self.display_surface.blit(self.screen, (0, 0))
         pygame.display.update()
 
     def event_check(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                sys.exit(0)
 
     @contextlib.contextmanager
     def locked(self):

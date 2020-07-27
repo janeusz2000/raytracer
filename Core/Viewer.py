@@ -56,8 +56,12 @@ class Viewer:
             return (1.0 - t) * Color.Color(1.0, 1.0, 1.0) + t * Color.Color(0.5, 0.7, 1.0)
 
         else:
-            target = (closest_hit_data.normal + Vector.random()).normalize()
-            return 0.5 * self.ray_color(Ray(closest_hit_data.point, target), depth-1)
+            target, color_attenuation = closest_hit_data.material.scatter(
+                closest_hit_data.point, closest_hit_data.normal, ray.direction)
+            return 0.5 * color_attenuation + 0.5 * self.ray_color(Ray(closest_hit_data.point, target), depth-1)
+
+            # if hit light source:
+            # base_Color * (ambient + diffuse( normal.scalar_product(ray.direction)) +  specular(normal.scalar_product(h)^power
 
     @staticmethod
     def is_ray_inside(ray, normal):
